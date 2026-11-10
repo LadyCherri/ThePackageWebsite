@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Resistance — The Package</title>
+<meta name="description" content="Meet the five people standing between the crown and one undelivered package.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Karla:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bark:         #3b2a1f;
+    --bark-deep:    #241a12;
+    --spruce:       #2d4a3a;
+    --spruce-deep:  #1c2f26;
+    --embers:       #c84630;
+    --embers-deep:  #8f2e1e;
+    --parchment:    #ede0c8;
+    --parchment-2:  #e2d2ac;
+    --candle:       #f0b429;
+    --frost:        #d8e8e4;
+    --ink:          #241a12;
+    --ink-soft:     #5b4733;
+    --cork:         #8a6a4a;
+    --cork-deep:    #6e5339;
+
+    --display: 'Fraunces', serif;
+    --body:    'Karla', sans-serif;
+    --stamp:   'Special Elite', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background: var(--bark-deep);
+    color: var(--parchment);
+    font-family: var(--body);
+    font-size:16px;
+    line-height:1.6;
+  }
+  a{ color:inherit; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  /* ---- shared nav (same as index) ---- */
+  header.site-nav{
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg, var(--bark) 0%, rgba(59,42,31,.96) 100%);
+    border-bottom:3px solid var(--bark-deep);
+    box-shadow:0 4px 18px rgba(0,0,0,.35);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1080px; margin:0 auto;
+  }
+  .brand{
+    font-family:var(--display); font-weight:600; font-size:19px;
+    text-decoration:none; color:var(--parchment);
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .brand .dot{ color:var(--candle); }
+  nav.links{ display:flex; gap:6px; }
+  nav.links a{
+    font-family:var(--body); font-weight:600; font-size:14.5px;
+    text-decoration:none; color:var(--parchment-2);
+    padding:8px 14px; border-radius:3px;
+    transition:color .15s ease, background .15s ease;
+  }
+  nav.links a:hover{ color:var(--candle); background:rgba(240,180,41,.08); }
+  nav.links a.current{ color:var(--candle); }
+  @media (max-width:560px){
+    .nav-inner{ flex-direction:column; gap:10px; align-items:flex-start; }
+    nav.links{ gap:2px; }
+    nav.links a{ padding:6px 10px; font-size:13.5px; }
+  }
+
+  /* ---- page head ---- */
+  .page-head{
+    padding:56px 0 20px;
+    text-align:center;
+  }
+  .section-eyebrow{
+    font-family:var(--stamp);
+    font-size:13px;
+    color:var(--candle);
+    margin:0 0 10px;
+  }
+  .page-head h1{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(2rem, 5vw, 2.8rem);
+    margin:0 0 14px;
+  }
+  .page-head p{
+    max-width:60ch;
+    margin:0 auto;
+    color:var(--parchment-2);
+    font-size:16px;
+    line-height:1.7;
+  }
+
+  /* ---- corkboard ---- */
+  .corkboard{
+    margin:40px 0 70px;
+    padding:48px 24px 60px;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,.08) 0, rgba(0,0,0,.08) 2px, transparent 2px),
+      radial-gradient(circle at 60% 70%, rgba(0,0,0,.08) 0, rgba(0,0,0,.08) 2px, transparent 2px),
+      radial-gradient(circle at 80% 20%, rgba(0,0,0,.06) 0, rgba(0,0,0,.06) 2px, transparent 2px),
+      radial-gradient(circle at 40% 85%, rgba(0,0,0,.06) 0, rgba(0,0,0,.06) 2px, transparent 2px),
+      linear-gradient(135deg, var(--cork) 0%, var(--cork-deep) 100%);
+    border-top:3px solid var(--bark-deep);
+    border-bottom:3px solid var(--bark-deep);
+    box-shadow:inset 0 0 60px rgba(0,0,0,.35);
+  }
+
+  .roster{
+    max-width:1080px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:38px 28px;
+  }
+  @media (max-width:860px){ .roster{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:560px){ .roster{ grid-template-columns:1fr; gap:46px; } }
+
+  .card{
+    position:relative;
+    background:var(--parchment);
+    color:var(--ink);
+    padding:20px 18px 18px;
+    box-shadow:0 10px 20px rgba(0,0,0,.4);
+  }
+  .card{ scroll-margin-top:100px; }
+  .card:nth-child(1){ transform:rotate(-2.2deg); }
+  .card:nth-child(2){ transform:rotate(1.6deg); }
+  .card:nth-child(3){ transform:rotate(-1deg); }
+  .card:nth-child(4){ transform:rotate(2deg); }
+  .card:nth-child(5){ transform:rotate(-1.6deg); }
+  .card:hover{ z-index:2; }
+
+  .pin{
+    position:absolute;
+    top:-9px; left:50%;
+    transform:translateX(-50%);
+    width:16px; height:16px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #e8604a, var(--embers-deep));
+    box-shadow:0 3px 5px rgba(0,0,0,.5);
+    z-index:3;
+  }
+  .card.royal .pin{
+    background:radial-gradient(circle at 35% 30%, #ffd873, #b8891c);
+  }
+
+  .sprite-slot{
+    width:100%;
+    aspect-ratio:1/1;
+    background:var(--bark-deep);
+    border:1px solid rgba(36,26,18,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .sprite-slot svg{ width:62%; height:62%; }
+  .sprite-note{
+    position:absolute;
+    bottom:6px; right:6px;
+    font-family:var(--stamp);
+    font-size:8.5px;
+    letter-spacing:.04em;
+    color:rgba(237,224,200,.4);
+  }
+
+  .card .role-tag{
+    display:inline-block;
+    font-family:var(--stamp);
+    font-size:11px;
+    letter-spacing:.03em;
+    color:#fff;
+    background:var(--spruce-deep);
+    padding:3px 9px;
+    margin-bottom:8px;
+  }
+  .card.royal .role-tag{ background:var(--embers-deep); }
+
+  .card h2{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:21px;
+    margin:0 0 4px;
+    line-height:1.2;
+  }
+  .card .by-name{
+    font-family:var(--stamp);
+    font-size:11px;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+  }
+  .card p.bio{
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .traits{ display:flex; flex-wrap:wrap; gap:6px; }
+  .trait{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:11px;
+    color:var(--spruce-deep);
+    background:rgba(45,74,58,.12);
+    padding:3px 9px;
+    border-radius:2px;
+  }
+  .card.royal .trait{
+    color:var(--embers-deep);
+    background:rgba(200,70,48,.12);
+  }
+
+  footer{
+    border-top:3px solid var(--bark);
+    padding:30px 0;
+    text-align:center;
+    font-size:13px;
+    color:rgba(237,224,200,.5);
+  }
+
+
+/* Redesigned visual language: same woodland palette, brighter editorial layout */
+:root{--bark:#463226;--bark-deep:#2b211b;--spruce:#315543;--spruce-deep:#233d31;--embers:#bd4935;--embers-deep:#8f3428;--parchment:#f8f1e5;--parchment-2:#e9dbc5;--candle:#e8ae42;--frost:#dcece8;--ink:#2b211b;--ink-soft:#665344}
+body{background:#f8f1e5;color:#33271f}
+header.site-nav{background:#fff9ef;border-bottom:1px solid #dfd1bc;box-shadow:0 3px 18px #46322615}
+.brand{color:#463226!important}.brand .dot{color:#bd4935!important}
+nav.links a{color:#624e3d!important}nav.links a:hover,nav.links a.current{color:#a93c2d!important;background:#f2e2d3!important}
+footer{background:#2b211b;color:#f8f1e5}
+button,a,.hotspot{touch-action:manipulation}
+.hotspot{cursor:pointer;outline:none;transform:none!important;transition:none!important}
+.hotspot:hover,.hotspot:focus{transform:none!important;filter:drop-shadow(0 0 9px #f3c96c)!important}
+.hotspot .hl{opacity:0!important}.hotspot:hover .hl,.hotspot:focus .hl{opacity:.32!important}
+.map-stage{background:#e9dbc5!important;padding:24px 16px 36px!important}
+.map-frame{max-width:960px!important;margin:auto;border:9px solid #fffaf0!important;border-radius:20px!important;overflow:hidden;box-shadow:0 18px 50px #46322630!important}
+.map-hint{color:#5d4939!important}
+.modal-overlay{z-index:1000!important}
+@media(max-width:650px){.map-stage{padding:12px 5px!important}.map-frame{border-width:4px!important;border-radius:12px!important}}
+
+</style>
+</head>
+<body>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="./index.html">The Package<span class="dot">.</span></a>
+      <nav class="links">
+        <a href="./index.html">The Village</a>
+        <a href="./Characters.html" class="current">The Resistance</a>
+        <a href="./Map.html">The Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-head">
+    <div class="wrap">
+      <p class="section-eyebrow">FIVE RESIDENTS, ONE COURIER</p>
+      <h1>The Resistance</h1>
+      <p>Pinned up at the Hearth &amp; Hollow, mostly so new couriers know who they're dealing with. Four of them might help you. One of them signed the decree that started all this.</p>
+    </div>
+  </div>
+
+  <div class="corkboard">
+    <div class="roster">
+
+      <!-- Pip — protagonist -->
+      <div class="card" id="pip">
+        <span class="pin"></span>
+        <div class="sprite-slot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="38" r="20" fill="#e3b98a"/>
+            <path d="M28 30 Q50 6 72 30 L68 20 Q50 2 32 20 Z" fill="#2d4a3a"/>
+            <path d="M50 10 L50 2" stroke="#f0b429" stroke-width="3" stroke-linecap="round"/>
+            <rect x="26" y="58" width="48" height="38" rx="6" fill="#c84630"/>
+            <circle cx="40" cy="36" r="3" fill="#241a12"/>
+            <circle cx="60" cy="36" r="3" fill="#241a12"/>
+          </svg>
+        </div>
+        <span class="sprite-note">sprite tbd</span>
+        <span class="role-tag">THE COURIER</span>
+        <h2>Pip Hollowtide</h2>
+        <p class="by-name">royal courier, 3rd class</p>
+        <p class="bio">Pip never wanted to be a hero. Pip wanted to deliver one package and get home before supper. Three broken alarms, one collapsed bridge, and a deeply suspicious innkeeper later, that plan is... in progress.</p>
+        <div class="traits">
+          <span class="trait">stubborn</span>
+          <span class="trait">too polite</span>
+          <span class="trait">quietly brave</span>
+        </div>
+      </div>
+
+      <!-- Greta — innkeeper -->
+      <div class="card" id="greta">
+        <span class="pin"></span>
+        <div class="sprite-slot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="38" r="20" fill="#d8a878"/>
+            <path d="M30 28 Q50 14 70 28 L70 36 Q50 24 30 36 Z" fill="#8a6a4a"/>
+            <rect x="24" y="58" width="52" height="38" rx="6" fill="#2d4a3a"/>
+            <rect x="34" y="62" width="32" height="8" fill="#f0b429"/>
+            <circle cx="40" cy="36" r="3" fill="#241a12"/>
+            <circle cx="60" cy="36" r="3" fill="#241a12"/>
+          </svg>
+        </div>
+        <span class="sprite-note">sprite tbd</span>
+        <span class="role-tag">THE KEEPER</span>
+        <h2>Greta Windervale</h2>
+        <p class="by-name">owner, the Hearth &amp; Hollow</p>
+        <p class="bio">The Hearth and Hollow has the best cider in the kingdom and the worst opinion of the monarchy, though Greta will deny that second part to strangers. She's outlived two decrees banning "unlicensed gatherings" and will feed you first, interrogate you after.</p>
+        <div class="traits">
+          <span class="trait">sharp-tongued</span>
+          <span class="trait">secretly in charge</span>
+          <span class="trait">excellent cider</span>
+        </div>
+      </div>
+
+      <!-- Oskar — deserter -->
+      <div class="card" id="oskar">
+        <span class="pin"></span>
+        <div class="sprite-slot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="40" r="24" fill="#c9d6d4"/>
+            <rect x="18" y="62" width="64" height="34" rx="6" fill="#4a5a56"/>
+            <circle cx="42" cy="38" r="3" fill="#241a12"/>
+            <circle cx="62" cy="38" r="3" fill="#241a12"/>
+            <path d="M34 52 Q50 60 66 52" stroke="#241a12" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="sprite-note">sprite tbd</span>
+        <span class="role-tag">THE DESERTER</span>
+        <h2>Oskar Brambleknuck</h2>
+        <p class="by-name">formerly, royal mine guard</p>
+        <p class="bio">Built to guard the royal mines, reassigned to guard his own conscience instead. Oskar left the crown's service after one decree too many and hasn't slept well since — mostly because the town keeps asking him to carry things.</p>
+        <div class="traits">
+          <span class="trait">gentle giant</span>
+          <span class="trait">ex-guard</span>
+          <span class="trait">bad at compliments</span>
+        </div>
+      </div>
+
+      <!-- Wick — mapmaker -->
+      <div class="card" id="wick">
+        <span class="pin"></span>
+        <div class="sprite-slot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="38" r="19" fill="#e3b98a"/>
+            <path d="M30 30 Q50 10 70 30 L66 24 Q50 8 34 24 Z" fill="#c84630"/>
+            <rect x="27" y="56" width="46" height="40" rx="6" fill="#f0b429"/>
+            <circle cx="41" cy="36" r="3" fill="#241a12"/>
+            <circle cx="59" cy="36" r="3" fill="#241a12"/>
+            <path d="M40 46 Q50 42 60 46" stroke="#241a12" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="sprite-note">sprite tbd</span>
+        <span class="role-tag">THE MAPMAKER</span>
+        <h2>Wick Fennimore</h2>
+        <p class="by-name">cartographer's apprentice (unofficial)</p>
+        <p class="bio">Knows every alley, drainpipe, and unlisted door in town — mostly because half of them are hers. Officially a cartographer's apprentice. Unofficially, the reason three royal patrols got lost in a town with one main street.</p>
+        <div class="traits">
+          <span class="trait">mischievous</span>
+          <span class="trait">knows everyone</span>
+          <span class="trait">impossible to pin down</span>
+        </div>
+      </div>
+
+      <!-- King Kristoff — antagonist -->
+      <div class="card royal" id="kristoff">
+        <span class="pin"></span>
+        <div class="sprite-slot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="40" r="21" fill="#f3d9b1"/>
+            <path d="M28 28 L36 12 L44 24 L50 10 L56 24 L64 12 L72 28 Z" fill="#f0b429" stroke="#8f2e1e" stroke-width="1.5"/>
+            <rect x="24" y="62" width="52" height="34" rx="6" fill="#c84630"/>
+            <rect x="24" y="62" width="52" height="10" fill="#f3e9d2"/>
+            <circle cx="42" cy="40" r="3" fill="#241a12"/>
+            <circle cx="60" cy="40" r="3" fill="#241a12"/>
+            <path d="M38 52 Q50 48 62 52" stroke="#241a12" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="sprite-note">sprite tbd</span>
+        <span class="role-tag">THE CROWN</span>
+        <h2>King Kristoff</h2>
+        <p class="by-name">sovereign of the realm, by decree</p>
+        <p class="bio">Once, he simply delivered gifts. Now he delivers decrees, quotas, and the occasional eviction notice, all signed with the same cheerful seal. He genuinely believes he is good to everyone — nobody has found a polite way to tell him otherwise.</p>
+        <div class="traits">
+          <span class="trait">unshakeable</span>
+          <span class="trait">terrifyingly polite</span>
+          <span class="trait">means well, somehow</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    The Package — a wintery little game about delivering things you probably shouldn't.
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Map — The Package</title>
+<meta name="description" content="Three places that matter in the town that won't stop talking back to the crown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Karla:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bark:         #3b2a1f;
+    --bark-deep:    #241a12;
+    --spruce:       #2d4a3a;
+    --spruce-deep:  #1c2f26;
+    --embers:       #c84630;
+    --embers-deep:  #8f2e1e;
+    --parchment:    #ede0c8;
+    --parchment-2:  #e2d2ac;
+    --candle:       #f0b429;
+    --frost:        #d8e8e4;
+    --ink:          #241a12;
+    --ink-soft:     #5b4733;
+
+    --display: 'Fraunces', serif;
+    --body:    'Karla', sans-serif;
+    --stamp:   'Special Elite', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background: var(--bark-deep);
+    color: var(--parchment);
+    font-family: var(--body);
+    font-size:16px;
+    line-height:1.6;
+  }
+  a{ color:inherit; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  header.site-nav{
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg, var(--bark) 0%, rgba(59,42,31,.96) 100%);
+    border-bottom:3px solid var(--bark-deep);
+    box-shadow:0 4px 18px rgba(0,0,0,.35);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1080px; margin:0 auto;
+  }
+  .brand{
+    font-family:var(--display); font-weight:600; font-size:19px;
+    text-decoration:none; color:var(--parchment);
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .brand .dot{ color:var(--candle); }
+  nav.links{ display:flex; gap:6px; }
+  nav.links a{
+    font-family:var(--body); font-weight:600; font-size:14.5px;
+    text-decoration:none; color:var(--parchment-2);
+    padding:8px 14px; border-radius:3px;
+    transition:color .15s ease, background .15s ease;
+  }
+  nav.links a:hover{ color:var(--candle); background:rgba(240,180,41,.08); }
+  nav.links a.current{ color:var(--candle); }
+  @media (max-width:560px){
+    .nav-inner{ flex-direction:column; gap:10px; align-items:flex-start; }
+    nav.links{ gap:2px; }
+    nav.links a{ padding:6px 10px; font-size:13.5px; }
+  }
+
+  .page-head{ padding:56px 0 20px; text-align:center; }
+  .section-eyebrow{
+    font-family:var(--stamp); font-size:13px; color:var(--candle); margin:0 0 10px;
+  }
+  .page-head h1{
+    font-family:var(--display); font-weight:600;
+    font-size:clamp(2rem, 5vw, 2.8rem); margin:0 0 14px;
+  }
+  .page-head p{
+    max-width:60ch; margin:0 auto; color:var(--parchment-2);
+    font-size:16px; line-height:1.7;
+  }
+
+  /* ---- map stage ---- */
+  .map-stage{
+    margin:36px 0 20px;
+    padding:0 16px 60px;
+  }
+  .map-frame{
+    max-width:920px;
+    margin:0 auto;
+    border:3px solid var(--bark);
+    box-shadow:0 14px 34px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+  .map-frame svg{ display:block; width:100%; height:auto; }
+
+  .hotspot{ cursor:pointer; }
+  .hotspot .hl{
+    opacity:0;
+    transition:opacity .18s ease;
+  }
+  .hotspot:hover .hl,
+  .hotspot:focus-visible .hl{ opacity:1; }
+  .hotspot .label-tag{
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .hotspot:hover .label-tag,
+  .hotspot:focus-visible .label-tag{ opacity:1; transform:translateY(0); }
+  .hotspot:focus-visible{ outline:none; }
+  .hotspot:focus-visible .hl{ opacity:1; }
+
+  .map-hint{
+    text-align:center;
+    font-family:var(--stamp);
+    font-size:12.5px;
+    color:rgba(237,224,200,.55);
+    margin-top:16px;
+  }
+
+  /* ---- modal ---- */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(16,10,6,.72);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+
+  .location-card{
+    background:var(--parchment);
+    color:var(--ink);
+    max-width:460px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    box-shadow:0 24px 50px rgba(0,0,0,.55);
+    transform:translateY(16px) scale(.98);
+    transition:transform .2s ease;
+  }
+  .modal-overlay.open .location-card{ transform:translateY(0) scale(1); }
+
+  .location-card .photo{
+    position:relative;
+    aspect-ratio:4/3;
+    background:
+      repeating-linear-gradient(45deg, rgba(36,26,18,.06) 0, rgba(36,26,18,.06) 10px, transparent 10px, transparent 20px),
+      var(--bark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-bottom:1px solid rgba(36,26,18,.2);
+  }
+  .location-card .photo svg{ width:46%; height:46%; opacity:.9; }
+  .location-card .photo-note{
+    position:absolute;
+    bottom:10px; right:12px;
+    font-family:var(--stamp);
+    font-size:10px;
+    color:rgba(237,224,200,.55);
+  }
+
+  .location-card .lc-body{ padding:22px 24px 26px; }
+  .location-card .tag{
+    display:inline-block;
+    font-family:var(--stamp);
+    font-size:11px;
+    color:#fff;
+    background:var(--spruce-deep);
+    padding:3px 9px;
+    margin-bottom:10px;
+  }
+  .location-card h2{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:24px;
+    margin:0 0 12px;
+  }
+  .location-card p.desc{
+    font-size:14.5px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+  }
+  .location-card .residents{
+    border-top:1px dashed rgba(36,26,18,.25);
+    padding-top:14px;
+  }
+  .location-card .residents .r-label{
+    font-family:var(--stamp);
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .location-card .residents .r-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .location-card .residents a{
+    text-decoration:none;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--spruce-deep);
+    background:rgba(45,74,58,.12);
+    padding:4px 10px;
+    border-radius:2px;
+    transition:background .15s ease;
+  }
+  .location-card .residents a:hover{ background:rgba(45,74,58,.22); }
+
+  .close-btn{
+    position:absolute;
+    top:12px; right:12px;
+    width:30px; height:30px;
+    border-radius:50%;
+    border:none;
+    background:rgba(36,26,18,.55);
+    color:#fff;
+    font-size:16px;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .close-btn:hover{ background:rgba(36,26,18,.8); }
+
+  footer{
+    border-top:3px solid var(--bark);
+    padding:30px 0;
+    text-align:center;
+    font-size:13px;
+    color:rgba(237,224,200,.5);
+  }
+
+
+/* Redesigned visual language: same woodland palette, brighter editorial layout */
+:root{--bark:#463226;--bark-deep:#2b211b;--spruce:#315543;--spruce-deep:#233d31;--embers:#bd4935;--embers-deep:#8f3428;--parchment:#f8f1e5;--parchment-2:#e9dbc5;--candle:#e8ae42;--frost:#dcece8;--ink:#2b211b;--ink-soft:#665344}
+body{background:#f8f1e5;color:#33271f}
+header.site-nav{background:#fff9ef;border-bottom:1px solid #dfd1bc;box-shadow:0 3px 18px #46322615}
+.brand{color:#463226!important}.brand .dot{color:#bd4935!important}
+nav.links a{color:#624e3d!important}nav.links a:hover,nav.links a.current{color:#a93c2d!important;background:#f2e2d3!important}
+footer{background:#2b211b;color:#f8f1e5}
+button,a,.hotspot{touch-action:manipulation}
+.hotspot{cursor:pointer;outline:none;transform:none!important;transition:none!important}
+.hotspot:hover,.hotspot:focus{transform:none!important;filter:drop-shadow(0 0 9px #f3c96c)!important}
+.hotspot .hl{opacity:0!important}.hotspot:hover .hl,.hotspot:focus .hl{opacity:.32!important}
+.map-stage{background:#e9dbc5!important;padding:24px 16px 36px!important}
+.map-frame{max-width:960px!important;margin:auto;border:9px solid #fffaf0!important;border-radius:20px!important;overflow:hidden;box-shadow:0 18px 50px #46322630!important}
+.map-hint{color:#5d4939!important}
+.modal-overlay{z-index:1000!important}
+@media(max-width:650px){.map-stage{padding:12px 5px!important}.map-frame{border-width:4px!important;border-radius:12px!important}}
+
+</style>
+</head>
+<body>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="./index.html">The Package<span class="dot">.</span></a>
+      <nav class="links">
+        <a href="./index.html">The Village</a>
+        <a href="./Characters.html">The Resistance</a>
+        <a href="./Map.html" class="current">The Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-head">
+    <div class="wrap">
+      <p class="section-eyebrow">THREE PLACES THAT MATTER</p>
+      <h1>The Map</h1>
+      <p>Not the whole town — just the parts of it you'll actually need. Click a building to see what's really going on inside.</p>
+    </div>
+  </div>
+
+  <div class="map-stage">
+    <div class="map-frame">
+      <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive snowy village with entrance at the bottom">
+<rect width="900" height="560" fill="#dbe9e4"/><rect x="30" y="26" width="840" height="508" rx="36" fill="#f9f6eb" stroke="#9eb4a8" stroke-width="5"/>
+<path d="M450 560 L450 455 Q450 380 390 320 Q340 270 400 210 L440 120" fill="none" stroke="#dfcbb0" stroke-width="66" stroke-linecap="round"/>
+<path d="M450 560 L450 455 Q450 380 390 320 Q340 270 400 210 L440 120" fill="none" stroke="#f3e7d5" stroke-width="51" stroke-linecap="round"/>
+<path d="M440 300 Q560 310 730 340 M390 370 Q265 370 160 320" fill="none" stroke="#dfcbb0" stroke-width="35" stroke-linecap="round"/>
+<path d="M440 300 Q560 310 730 340 M390 370 Q265 370 160 320" fill="none" stroke="#f3e7d5" stroke-width="27" stroke-linecap="round"/>
+<g id="trees"><g transform="translate(65 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(65 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(127 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(127 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(189 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(189 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(251 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(251 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(313 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(313 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(375 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(437 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(499 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(561 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(561 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(623 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(623 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(685 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(685 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(747 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(747 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(809 55)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(809 495)"><rect x="-4" y="-3" width="8" height="28" fill="#82644a"/><path d="M0 -37 L-22 7 H22Z" fill="#315543"/><path d="M0 -49 L-17 -11 H17Z" fill="#42715b"/><path d="M0 -49 L-8 -31 L5 -31Z" fill="#f9f6eb"/></g><g transform="translate(65 110)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(835 110)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(65 180)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(835 180)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(65 250)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(835 250)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(65 320)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(835 320)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(65 390)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g><g transform="translate(835 390)"><rect x="-4" y="-3" width="8" height="25" fill="#82644a"/><path d="M0 -37 L-21 9 H21Z" fill="#315543"/><path d="M0 -48 L-16 -10 H16Z" fill="#42715b"/></g></g><path d="M55 470 V90 H845 V470 M55 470 H360 M530 470 H845" fill="none" stroke="#9b7555" stroke-width="7" stroke-dasharray="18 9" opacity=".8"/><g transform="translate(0 145)"><g class="hotspot" data-key="hearth" tabindex="0" role="button" aria-label="Open Toy Shop" aria-haspopup="dialog"><ellipse class="hl" cx="205" cy="278" rx="85" ry="24" fill="#e8ae42"/><rect x="147" y="209" width="116" height="70" rx="5" fill="#e8d3b5" stroke="#8b6950" stroke-width="3"/><polygon points="135,209 205,153 275,209" fill="#bd4935" stroke="#8b6950" stroke-width="3"/><path d="M145 209 H265" stroke="#fff8ed" stroke-width="7"/><rect x="192" y="239" width="26" height="40" fill="#79553e"/><rect x="163" y="230" width="20" height="20" fill="#f0bc59"/><rect x="227" y="230" width="20" height="20" fill="#f0bc59"/><rect x="118" y="282" width="174" height="27" rx="13" fill="#fffaf0" stroke="#d7c7b1"/><text x="205" y="300" text-anchor="middle" font-family="Karla,sans-serif" font-size="14" font-weight="700" fill="#463226">Toy Shop</text></g></g><g class="hotspot" data-key="watchbell" tabindex="0" role="button" aria-label="Open Murryah’s Coffee" aria-haspopup="dialog"><ellipse class="hl" cx="480" cy="258" rx="85" ry="24" fill="#e8ae42"/><rect x="453" y="143" width="54" height="114" rx="3" fill="#e8d3b5" stroke="#8b6950" stroke-width="3"/><polygon points="444,143 480,91 516,143" fill="#315543" stroke="#8b6950" stroke-width="3"/><rect x="469" y="168" width="22" height="27" fill="#e8ae42"/><rect x="470" y="220" width="20" height="37" fill="#72523d"/><rect x="393" y="262" width="174" height="27" rx="13" fill="#fffaf0" stroke="#d7c7b1"/><text x="480" y="280" text-anchor="middle" font-family="Karla,sans-serif" font-size="14" font-weight="700" fill="#463226">Murryah’s Coffee</text></g><g class="hotspot" data-key="depot" tabindex="0" role="button" aria-label="Open Bakery" aria-haspopup="dialog"><ellipse class="hl" cx="700" cy="308" rx="85" ry="24" fill="#e8ae42"/><rect x="642" y="239" width="116" height="70" rx="5" fill="#e8d3b5" stroke="#8b6950" stroke-width="3"/><polygon points="630,239 700,183 770,239" fill="#bd4935" stroke="#8b6950" stroke-width="3"/><path d="M640 239 H760" stroke="#fff8ed" stroke-width="7"/><rect x="687" y="269" width="26" height="40" fill="#79553e"/><rect x="658" y="260" width="20" height="20" fill="#f0bc59"/><rect x="722" y="260" width="20" height="20" fill="#f0bc59"/><rect x="613" y="312" width="174" height="27" rx="13" fill="#fffaf0" stroke="#d7c7b1"/><text x="700" y="330" text-anchor="middle" font-family="Karla,sans-serif" font-size="14" font-weight="700" fill="#463226">Bakery</text></g><g transform="translate(0 -145)"><g opacity=".95"><rect x="165" y="399" width="85" height="50" fill="#e3d2b9"/><polygon points="155,399 207,362 260,399" fill="#a56d58"/><rect x="195" y="420" width="20" height="29" fill="#79553e"/><text x="205" y="468" text-anchor="middle" font-size="13" fill="#665344">Cottage</text></g></g>
+<g><rect x="655" y="403" width="100" height="46" fill="#ddc6a4"/><polygon points="644,403 705,362 766,403" fill="#8b6950"/><rect x="680" y="421" width="42" height="28" fill="#79553e"/><path d="M770 400 h34 v48 h-34z" fill="#c9b08e"/><text x="713" y="469" text-anchor="middle" font-size="13" fill="#665344">Little farm</text></g>
+<path d="M365 519 H410 M490 519 H535" stroke="#9b7555" stroke-width="8" stroke-linecap="round"/><rect x="366" y="491" width="12" height="45" fill="#9b7555"/><rect x="522" y="491" width="12" height="45" fill="#9b7555"/><rect x="385" y="506" width="130" height="24" rx="12" fill="#bd4935"/><text x="450" y="523" text-anchor="middle" font-family="Karla,sans-serif" font-weight="700" font-size="13" fill="#fffaf0">VILLAGE ENTRANCE</text>
+<text x="450" y="91" text-anchor="middle" font-family="Fraunces,serif" font-size="31" fill="#463226">Welcome to Hollowtide</text></svg>
+    </div>
+    <p class="map-hint">tap or click a building</p>
+  </div>
+
+  <footer>
+    The Package — a wintery little game about delivering things you probably shouldn't.
+  </footer>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Location details">
+    <div class="location-card" id="locationCard">
+      <button class="close-btn" id="closeBtn" aria-label="Close">×</button>
+      <div class="photo" id="photoSlot"></div>
+      <div class="lc-body">
+        <span class="tag" id="lcTag"></span>
+        <h2 id="lcTitle"></h2>
+        <p class="desc" id="lcDesc"></p>
+        <div class="residents" id="lcResidents">
+          <p class="r-label">CONNECTED TO</p>
+          <div class="r-links" id="lcResidentLinks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const LOCATIONS = {
+    hearth: {
+      tag: 'VILLAGE SHOP',
+      title: 'Toy Shop',
+      desc: "A small toy shop in the village. Its shelves are full of handmade surprises, and its story is still waiting to be told.",
+      photoIcon: 'hearth',
+      residents: []
+    },
+    watchbell: {
+      tag: 'COFFEE SHOP',
+      title: "Murryah's Coffee",
+      desc: "The village coffee shop: a warm stop for a drink and a conversation away from the winter cold. More details coming soon.",
+      photoIcon: 'watchbell',
+      residents: []
+    },
+    depot: {
+      tag: 'VILLAGE BAKERY',
+      title: 'Bakery',
+      desc: "A cozy bakery where fresh bread and sweet treats bring a little warmth to the snowy village. More details coming soon.",
+      photoIcon: 'depot',
+      residents: []
+    }
+  };
+
+  const PHOTO_ICONS = {
+    hearth: '<svg viewBox="0 0 100 100"><rect x="18" y="38" width="64" height="44" fill="#6b4a33"/><polygon points="12,38 50,14 88,38" fill="#8f2e1e"/><rect x="42" y="56" width="16" height="26" fill="#241a12"/><rect x="26" y="46" width="10" height="10" fill="#f0b429"/><rect x="64" y="46" width="10" height="10" fill="#f0b429"/></svg>',
+    watchbell: '<svg viewBox="0 0 100 100"><rect x="38" y="34" width="24" height="48" fill="#3b2a1f"/><polygon points="32,34 50,12 68,34" fill="#2d4a3a"/><rect x="44" y="48" width="12" height="16" fill="#241a12"/><path d="M45 54 a5 5 0 0 1 10 0" fill="none" stroke="#f0b429" stroke-width="2"/></svg>',
+    depot: '<svg viewBox="0 0 100 100"><rect x="16" y="40" width="68" height="40" fill="#5b4733"/><polygon points="10,40 50,18 90,40" fill="#c84630"/><rect x="34" y="56" width="32" height="24" fill="#241a12"/><rect x="38" y="60" width="24" height="6" fill="#f3e9d2" opacity="0.85"/></svg>'
+  };
+
+  const overlay = document.getElementById('modalOverlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const photoSlot = document.getElementById('photoSlot');
+  const lcTag = document.getElementById('lcTag');
+  const lcTitle = document.getElementById('lcTitle');
+  const lcDesc = document.getElementById('lcDesc');
+  const lcResidentLinks = document.getElementById('lcResidentLinks');
+
+  function openLocation(key){
+    const loc = LOCATIONS[key];
+    if(!loc) return;
+    photoSlot.innerHTML = (PHOTO_ICONS[loc.photoIcon] || '') + '<span class="photo-note">photograph pending</span>';
+    lcTag.textContent = loc.tag;
+    lcTitle.textContent = loc.title;
+    lcDesc.textContent = loc.desc;
+    lcResidentLinks.innerHTML = '';
+    loc.residents.forEach(([name, href])=>{
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = name;
+      lcResidentLinks.appendChild(a);
+    });
+    overlay.classList.add('open');
+  }
+
+  function closeModal(){
+    overlay.classList.remove('open');
+  }
+
+  document.querySelectorAll('.hotspot').forEach(el=>{
+    const key = el.getAttribute('data-key');
+    el.addEventListener('click', ()=> openLocation(key));
+    el.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openLocation(key);
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e=>{
+    if(e.target === overlay) closeModal();
+  });
+  window.addEventListener('keydown', e=>{
+    if(e.key === 'Escape') closeModal();
+  });
+})();
+</script>
+
+</body>
+</html>
